@@ -46,9 +46,20 @@ interface FloatingRune {
 export function AnimatedBackground() {
   const [mounted, setMounted] = useState(false);
   const [runes, setRunes] = useState<FloatingRune[]>([]);
+  const [windowHeight, setWindowHeight] = useState(1000); // Default fallback
 
   useEffect(() => {
     setMounted(true);
+    
+    // Set window height safely
+    const updateWindowHeight = () => {
+      if (typeof window !== 'undefined') {
+        setWindowHeight(window.innerHeight);
+      }
+    };
+    
+    updateWindowHeight();
+    window.addEventListener('resize', updateWindowHeight);
     
     // Generate random runes
     const generateRunes = () => {
@@ -74,7 +85,10 @@ export function AnimatedBackground() {
     // Regenerate runes periodically for variety
     const interval = setInterval(generateRunes, 45000); // Every 45 seconds
     
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('resize', updateWindowHeight);
+    };
   }, []);
 
   if (!mounted) return null;
@@ -117,7 +131,7 @@ export function AnimatedBackground() {
 
       {/* Mystical Particles */}
       <div className="absolute inset-0">
-        {Array.from({ length: 50 }, (_, i) => (
+        {mounted && Array.from({ length: 50 }, (_, i) => (
           <motion.div
             key={`particle-${i}`}
             className="absolute w-1 h-1 bg-red-400 rounded-full"
@@ -126,7 +140,7 @@ export function AnimatedBackground() {
               top: `${Math.random() * 100}%`,
             }}
             animate={{
-              y: [0, -window.innerHeight - 100],
+              y: [0, -(windowHeight + 100)],
               opacity: [0, 0.6, 0.6, 0],
               scale: [0, 1, 1, 0],
             }}
@@ -161,7 +175,7 @@ export function AnimatedBackground() {
           animate={{ rotate: 360 }}
           transition={{ duration: 120, repeat: Infinity, ease: "linear" }}
         >
-          {Array.from({ length: 8 }, (_, i) => (
+          {mounted && Array.from({ length: 8 }, (_, i) => (
             <motion.div
               key={`circle-rune-${i}`}
               className="absolute text-6xl text-red-600/10 select-none"
