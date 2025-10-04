@@ -31,16 +31,16 @@ export function MenuCard({
   className 
 }: MenuCardProps) {
   return (
-    <Card className={`bg-slate-800/50 backdrop-blur-xl border border-slate-700/50 hover:${borderColor} transition-all duration-300 overflow-hidden group ${className || ''}`}>
+    <Card className={`glass-card hover:${borderColor} transition-all duration-500 overflow-hidden group viking-glow ${className || ''}`}>
       <div className="p-8">
         <div className="text-center mb-8">
-          <div className={`w-16 h-16 bg-gradient-to-br ${iconGradient} rounded-2xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
-            <Icon className="w-8 h-8 text-white" />
+          <div className={`w-18 h-18 bg-gradient-to-br ${iconGradient} rounded-3xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300`}>
+            <Icon className="w-10 h-10 text-white" />
           </div>
-          <h3 className={`runic-text text-2xl font-bold mb-2 ${priceColor}`}>
+          <h3 className={`runic-text text-3xl font-bold mb-3 ${priceColor}`}>
             {runicTitle}
           </h3>
-          <h4 className="text-lg font-semibold text-white">{title}</h4>
+          <h4 className="text-xl font-semibold text-gray-800">{title}</h4>
         </div>
         
         <div className="space-y-6">
@@ -64,23 +64,23 @@ interface MenuItemCardProps {
 
 function MenuItemCard({ item, priceColor }: MenuItemCardProps) {
   return (
-    <Card className="bg-slate-700/30 border border-slate-600/30 p-4 hover:bg-slate-700/50 transition-all group/item">
+    <Card className="bg-white/80 border border-gray-200 p-4 hover:bg-white/90 hover:shadow-md transition-all duration-300 group/item">
       <div className="flex gap-4">
-        <div className="relative w-20 h-20 rounded-xl overflow-hidden">
+        <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-gray-200">
           <Image
             src={item.img}
             alt={item.name}
-            width={80}
-            height={80}
-            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform"
+            width={96}
+            height={96}
+            className="w-full h-full object-cover group-hover/item:scale-110 transition-transform duration-300"
           />
         </div>
         <div className="flex-1">
           <div className="flex justify-between items-start mb-2">
-            <h4 className="font-semibold text-white text-sm">{item.name}</h4>
-            <span className={`font-bold text-sm ${priceColor}`}>{item.price}</span>
+            <h4 className="font-semibold text-gray-800 text-base leading-tight">{item.name}</h4>
+            <span className={`font-bold text-base ${priceColor} ml-3`}>{item.price}</span>
           </div>
-          <p className="text-slate-400 text-xs leading-relaxed">{item.desc}</p>
+          <p className="text-gray-600 text-sm leading-relaxed">{item.desc}</p>
         </div>
       </div>
     </Card>

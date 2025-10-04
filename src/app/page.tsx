@@ -3,15 +3,22 @@ import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { MenuSection } from "@/components/sections/MenuSection";
 import { ContactSection } from "@/components/sections/ContactSection";
+import { AnimatedBackground } from "@/components/ui/AnimatedBackground";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-red-950/30 to-slate-900">
-      <Header />
-      <HeroSection />
-      <MenuSection />
-      <ContactSection />
-      <Footer />
+    <div className="min-h-screen bg-white">
+      {/* Animated Runic Background */}
+      <AnimatedBackground />
+      
+      {/* Main Content */}
+      <div className="content-layer">
+        <Header />
+        <HeroSection />
+        <MenuSection />
+        <ContactSection />
+        <Footer />
+      </div>
     </div>
   );
 }
