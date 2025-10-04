@@ -112,7 +112,7 @@ export function HeroSection({ className }: HeroSectionProps) {
               const IconComponent = stat.icon;
               return (
                 <motion.div 
-                  key={index} 
+                  key={`stat-${index}`}
                   className="text-center glass-card p-4 md:p-6 viking-glow"
                   initial={{ opacity: 0, scale: 0.8 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -155,6 +155,8 @@ export function HeroSection({ className }: HeroSectionProps) {
                 boxShadow: "0 0 30px rgba(220, 38, 38, 0.4)"
               }}
               whileTap={{ scale: 0.95 }}
+              type="button"
+              aria-label="View our Viking menu"
             >
               View Menu
             </motion.button>
@@ -167,6 +169,8 @@ export function HeroSection({ className }: HeroSectionProps) {
                 color: "white"
               }}
               whileTap={{ scale: 0.95 }}
+              type="button"
+              aria-label="Contact Viking Bites & Juice"
             >
               Contact Us
             </motion.button>
