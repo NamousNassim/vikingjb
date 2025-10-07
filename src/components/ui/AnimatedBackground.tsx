@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 // Extended Viking runes with their meanings
@@ -29,11 +29,14 @@ const VIKING_RUNES = [
   { symbol: "ᛜ", name: "Ingwaz", meaning: "Ing" },
   { symbol: "ᛞ", name: "Dagaz", meaning: "day" },
   { symbol: "ᛟ", name: "Othala", meaning: "heritage" }
-];
+] as const;
+
+// Create a type for any rune from the array
+type VikingrRune = typeof VIKING_RUNES[number];
 
 interface FloatingRune {
   id: number;
-  rune: typeof VIKING_RUNES[0];
+  rune: VikingrRune;
   x: number;
   y: number;
   size: number;
@@ -46,67 +49,68 @@ interface FloatingRune {
 export function AnimatedBackground() {
   const [mounted, setMounted] = useState(false);
   const [runes, setRunes] = useState<FloatingRune[]>([]);
-  const [windowHeight, setWindowHeight] = useState(1000); // Default fallback
+  const [windowHeight, setWindowHeight] = useState(1000);
+
+  const generateRunes = useCallback(() => {
+    const newRunes: FloatingRune[] = [];
+    for (let i = 0; i < 25; i++) {
+      newRunes.push({
+        id: i,
+        rune: VIKING_RUNES[Math.floor(Math.random() * VIKING_RUNES.length)],
+        x: Math.random() * 100,
+        y: Math.random() * 100,
+        size: Math.random() * 60 + 40,
+        duration: Math.random() * 20 + 15,
+        delay: Math.random() * -30,
+        rotation: Math.random() * 360,
+        opacity: Math.random() * 0.15 + 0.05,
+      });
+    }
+    setRunes(newRunes);
+  }, []);
+
+  const updateWindowHeight = useCallback(() => {
+    if (typeof window !== 'undefined') {
+      setWindowHeight(window.innerHeight);
+    }
+  }, []);
 
   useEffect(() => {
     setMounted(true);
-    
-    // Set window height safely
-    const updateWindowHeight = () => {
-      if (typeof window !== 'undefined') {
-        setWindowHeight(window.innerHeight);
-      }
-    };
-    
     updateWindowHeight();
-    window.addEventListener('resize', updateWindowHeight);
     
-    // Generate random runes
-    const generateRunes = () => {
-      const newRunes: FloatingRune[] = [];
-      for (let i = 0; i < 25; i++) {
-        newRunes.push({
-          id: i,
-          rune: VIKING_RUNES[Math.floor(Math.random() * VIKING_RUNES.length)],
-          x: Math.random() * 100,
-          y: Math.random() * 100,
-          size: Math.random() * 60 + 40, // 40-100px
-          duration: Math.random() * 20 + 15, // 15-35s
-          delay: Math.random() * -30, // Start at different times
-          rotation: Math.random() * 360,
-          opacity: Math.random() * 0.15 + 0.05, // 0.05-0.2
-        });
-      }
-      setRunes(newRunes);
-    };
-
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', updateWindowHeight);
+    }
+    
     generateRunes();
     
-    // Regenerate runes periodically for variety
-    const interval = setInterval(generateRunes, 45000); // Every 45 seconds
+    const interval = setInterval(generateRunes, 45000);
     
     return () => {
       clearInterval(interval);
-      window.removeEventListener('resize', updateWindowHeight);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', updateWindowHeight);
+      }
     };
-  }, []);
+  }, [updateWindowHeight, generateRunes]);
 
   if (!mounted) return null;
 
   return (
     <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
       {/* Floating Runes */}
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {runes.map((runeObj) => (
           <motion.div
-            key={runeObj.id}
+            key={`rune-${runeObj.id}`}
             className="absolute select-none"
             style={{
               left: `${runeObj.x}%`,
               top: `${runeObj.y}%`,
               fontSize: `${runeObj.size}px`,
               opacity: runeObj.opacity,
-              color: '#dc2626', // Red color
+              color: '#dc2626',
               fontFamily: 'var(--font-runic)',
               textShadow: '0 0 20px rgba(220, 38, 38, 0.3)',
             }}
@@ -131,7 +135,7 @@ export function AnimatedBackground() {
 
       {/* Mystical Particles */}
       <div className="absolute inset-0">
-        {mounted && Array.from({ length: 50 }, (_, i) => (
+        {mounted && Array.from({ length: 30 }, (_, i) => (
           <motion.div
             key={`particle-${i}`}
             className="absolute w-1 h-1 bg-red-400 rounded-full"
@@ -156,7 +160,10 @@ export function AnimatedBackground() {
 
       {/* Ambient Glow Effects */}
       <motion.div
-        className="absolute inset-0 bg-gradient-radial from-red-500/5 via-transparent to-transparent"
+        className="absolute inset-0"
+        style={{
+          background: "radial-gradient(circle, rgba(220, 38, 38, 0.05) 0%, transparent 70%)"
+        }}
         animate={{
           opacity: [0.3, 0.6, 0.3],
           scale: [1, 1.1, 1],
@@ -202,9 +209,12 @@ export function AnimatedBackground() {
         </motion.div>
       </div>
 
-      {/* Lightning Effects (occasional) */}
+      {/* Lightning Effects */}
       <motion.div
-        className="absolute inset-0 bg-gradient-to-r from-transparent via-red-500/5 to-transparent"
+        className="absolute inset-0"
+        style={{
+          background: "linear-gradient(to right, transparent, rgba(220, 38, 38, 0.05), transparent)"
+        }}
         animate={{
           opacity: [0, 0, 0, 0.8, 0],
           scaleX: [0, 0, 0, 1, 0],
@@ -212,7 +222,7 @@ export function AnimatedBackground() {
         transition={{
           duration: 0.5,
           repeat: Infinity,
-          repeatDelay: Math.random() * 15 + 10,
+          repeatDelay: 15,
           ease: "easeOut",
         }}
       />
